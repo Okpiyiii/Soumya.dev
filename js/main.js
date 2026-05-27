@@ -1,46 +1,185 @@
 /* ============================================================
    soumya.dev PORTFOLIO — main.js
-   Sections: Custom Cursor · Marquee Builder · Scroll Reveal
-             Active Nav Highlight · Contact Parallax
+   Sections: Loading Screen · Touch Detection · Custom Cursor
+             Hamburger Nav · Marquee Builder · Scroll Reveal
+             Active Nav · Contact Parallax · Hero Neural Canvas
    ============================================================ */
 
-/* ----- CUSTOM CURSOR ----- */
+/* ----- LOADING SCREEN ----- */
+(function () {
+  const overlay   = document.getElementById('loadingScreen');
+  const counterEl = document.getElementById('loadingCounter');
+  const barEl     = document.getElementById('loadingBar');
+  const wordEl    = document.getElementById('loadingWord');
+  if (!overlay || !counterEl || !barEl || !wordEl) return;
+
+  document.body.style.overflow = 'hidden';
+
+  const WORDS       = ['Design', 'Create', 'Inspire'];
+  const DURATION    = 2700;
+  const WORD_MS     = 900;
+  let count         = 0;
+  let wordIdx       = 0;
+  let started       = false;
+  let startTime     = null;
+  let lastWordCycle = 0;
+  let animatingWord = false;
+
+  function cycleWord() {
+    if (animatingWord) return;
+    animatingWord = true;
+    wordEl.classList.add('word-exit');
+    wordEl.addEventListener('animationend', function handler() {
+      wordEl.removeEventListener('animationend', handler);
+      wordIdx = (wordIdx + 1) % WORDS.length;
+      wordEl.textContent = WORDS[wordIdx];
+      wordEl.classList.remove('word-exit');
+      void wordEl.offsetWidth;
+      animatingWord = false;
+    }, { once: true });
+  }
+
+  function tick(ts) {
+    if (!started) {
+      started = true;
+      startTime = ts;
+    }
+
+    const elapsed = ts - startTime;
+    const raw = Math.min(elapsed / DURATION, 1);
+    count = Math.floor(raw * 100);
+
+    counterEl.textContent = String(count).padStart(3, '0');
+    barEl.style.transform = 'scaleX(' + (count / 100) + ')';
+
+    if (Math.floor(elapsed / WORD_MS) > lastWordCycle) {
+      lastWordCycle = Math.floor(elapsed / WORD_MS);
+      if (lastWordCycle < 4) cycleWord();
+    }
+
+    if (count >= 100) {
+      counterEl.textContent = '100';
+      barEl.style.transform = 'scaleX(1)';
+
+      setTimeout(function () {
+        overlay.classList.add('loading-exit');
+        overlay.addEventListener('animationend', function onEnd() {
+          overlay.removeEventListener('animationend', onEnd);
+          overlay.style.display = 'none';
+          document.body.style.overflow = '';
+          if (typeof window.onPortfolioLoaded === 'function') {
+            window.onPortfolioLoaded();
+          }
+        });
+      }, 400);
+
+      return;
+    }
+
+    requestAnimationFrame(tick);
+  }
+
+  requestAnimationFrame(tick);
+})();
+
+/* ----- TOUCH DEVICE DETECTION ----- */
+const isTouchDevice = ('ontouchstart' in window) ||
+  (navigator.maxTouchPoints > 0) ||
+  (navigator.msMaxTouchPoints > 0);
+
+if (isTouchDevice) {
+  document.documentElement.classList.add('touch');
+}
+
+/* ----- MOBILE VIEWPORT HEIGHT FIX ----- */
+function setVh() {
+  const vh = window.innerHeight * 0.01;
+  document.documentElement.style.setProperty('--vh', vh + 'px');
+}
+setVh();
+window.addEventListener('resize', setVh);
+window.addEventListener('orientationchange', () => setTimeout(setVh, 100));
+
+/* ----- CUSTOM CURSOR (desktop only) ----- */
 const cur  = document.getElementById('cur');
 const ring = document.getElementById('curRing');
-let mx = 0, my = 0, rx = 0, ry = 0;
 
-document.addEventListener('mousemove', e => {
-  mx = e.clientX;
-  my = e.clientY;
-  cur.style.left = mx + 'px';
-  cur.style.top  = my + 'px';
-});
+if (!isTouchDevice && cur && ring) {
+  let mx = 0, my = 0, rx = 0, ry = 0;
 
-function animRing() {
-  rx += (mx - rx) * 0.12;
-  ry += (my - ry) * 0.12;
-  ring.style.left = rx + 'px';
-  ring.style.top  = ry + 'px';
-  requestAnimationFrame(animRing);
+  document.addEventListener('mousemove', e => {
+    mx = e.clientX;
+    my = e.clientY;
+    cur.style.left = mx + 'px';
+    cur.style.top  = my + 'px';
+  });
+
+  function animRing() {
+    rx += (mx - rx) * 0.12;
+    ry += (my - ry) * 0.12;
+    ring.style.left = rx + 'px';
+    ring.style.top  = ry + 'px';
+    requestAnimationFrame(animRing);
+  }
+  animRing();
+
+  document.querySelectorAll('a, button, .card-arrow').forEach(el => {
+    el.addEventListener('mouseenter', () => {
+      cur.style.width  = '6px';
+      cur.style.height = '6px';
+      ring.style.width  = '56px';
+      ring.style.height = '56px';
+      ring.style.borderColor = 'rgba(255,95,21,0.8)';
+    });
+    el.addEventListener('mouseleave', () => {
+      cur.style.width  = '10px';
+      cur.style.height = '10px';
+      ring.style.width  = '36px';
+      ring.style.height = '36px';
+      ring.style.borderColor = 'rgba(255,95,21,0.5)';
+    });
+  });
 }
-animRing();
 
-document.querySelectorAll('a, button, .card-arrow').forEach(el => {
-  el.addEventListener('mouseenter', () => {
-    cur.style.width  = '6px';
-    cur.style.height = '6px';
-    ring.style.width  = '56px';
-    ring.style.height = '56px';
-    ring.style.borderColor = 'rgba(255,95,21,0.8)';
+/* ----- HAMBURGER MOBILE NAV ----- */
+(function () {
+  const nav = document.querySelector('nav');
+  const navLinks = document.querySelector('.nav-links');
+  if (!nav || !navLinks) return;
+
+  const hamburger = document.createElement('button');
+  hamburger.className = 'hamburger';
+  hamburger.setAttribute('aria-label', 'Toggle navigation');
+  hamburger.innerHTML = '<span></span><span></span><span></span>';
+  nav.appendChild(hamburger);
+
+  const overlay = document.createElement('div');
+  overlay.className = 'nav-overlay';
+  document.body.appendChild(overlay);
+
+  function openMenu() {
+    hamburger.classList.add('open');
+    navLinks.classList.add('open');
+    overlay.classList.add('visible');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeMenu() {
+    hamburger.classList.remove('open');
+    navLinks.classList.remove('open');
+    overlay.classList.remove('visible');
+    document.body.style.overflow = '';
+  }
+
+  hamburger.addEventListener('click', () => {
+    navLinks.classList.contains('open') ? closeMenu() : openMenu();
   });
-  el.addEventListener('mouseleave', () => {
-    cur.style.width  = '10px';
-    cur.style.height = '10px';
-    ring.style.width  = '36px';
-    ring.style.height = '36px';
-    ring.style.borderColor = 'rgba(255,95,21,0.5)';
+
+  overlay.addEventListener('click', closeMenu);
+
+  navLinks.querySelectorAll('a').forEach(link => {
+    link.addEventListener('click', closeMenu);
   });
-});
+})();
 
 /* ----- TECH STACK MARQUEE ----- */
 const techs = [
