@@ -2,7 +2,7 @@
 
 **Where Creativity Meets Results** — a modern, dark-themed personal portfolio for Soumya, a full-stack developer and ML/AI engineer.
 
-Live: [soumya.dev](https://soumya.dev)
+Live: [soumya.dev](https://soumya-dev-nine.vercel.app/)
 
 ---
 
