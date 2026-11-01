@@ -1,8 +1,9 @@
 /* ============================================================
    soumya.dev PORTFOLIO — main.js
-   Sections: Loading Screen · Touch Detection · Custom Cursor
+   Cool-minimal monochrome reskin.
+   Sections: Loading Screen · Touch Detection · Viewport Fix
              Hamburger Nav · Marquee Builder · Scroll Reveal
-             Active Nav · Contact Parallax · Hero Neural Canvas
+             Nav Contact · Contact Parallax · Hero Neural Canvas
    ============================================================ */
 
 /* ----- LOADING SCREEN ----- */
@@ -15,13 +16,13 @@
 
   document.body.style.overflow = 'hidden';
 
-  const WORDS       = ['Design', 'Create', 'Inspire'];
-  const DURATION    = 2700;
-  const WORD_MS     = 900;
-  let count         = 0;
-  let wordIdx       = 0;
-  let started       = false;
-  let startTime     = null;
+  const WORDS    = ['Design', 'Create', 'Inspire'];
+  const DURATION = 2200;
+  const WORD_MS  = 900;
+  let count      = 0;
+  let wordIdx    = 0;
+  let started    = false;
+  let startTime  = null;
   let lastWordCycle = 0;
   let animatingWord = false;
 
@@ -63,14 +64,23 @@
 
       setTimeout(function () {
         overlay.classList.add('loading-exit');
-        overlay.addEventListener('animationend', function onEnd() {
-          overlay.removeEventListener('animationend', onEnd);
+
+        let finished = false;
+        function finish() {
+          if (finished) return;
+          finished = true;
+          overlay.removeEventListener('animationend', finish);
           overlay.style.display = 'none';
           document.body.style.overflow = '';
           if (typeof window.onPortfolioLoaded === 'function') {
             window.onPortfolioLoaded();
           }
-        });
+        }
+
+        /* The exit animation is disabled under prefers-reduced-motion, so
+           animationend never fires — the timeout guarantees the overlay lifts. */
+        overlay.addEventListener('animationend', finish);
+        setTimeout(finish, 1000);
       }, 400);
 
       return;
@@ -91,55 +101,8 @@ if (isTouchDevice) {
   document.documentElement.classList.add('touch');
 }
 
-/* ----- MOBILE VIEWPORT HEIGHT FIX ----- */
-function setVh() {
-  const vh = window.innerHeight * 0.01;
-  document.documentElement.style.setProperty('--vh', vh + 'px');
-}
-setVh();
-window.addEventListener('resize', setVh);
-window.addEventListener('orientationchange', () => setTimeout(setVh, 100));
-
-/* ----- CUSTOM CURSOR (desktop only) ----- */
-const cur  = document.getElementById('cur');
-const ring = document.getElementById('curRing');
-
-if (!isTouchDevice && cur && ring) {
-  let mx = 0, my = 0, rx = 0, ry = 0;
-
-  document.addEventListener('mousemove', e => {
-    mx = e.clientX;
-    my = e.clientY;
-    cur.style.left = mx + 'px';
-    cur.style.top  = my + 'px';
-  });
-
-  function animRing() {
-    rx += (mx - rx) * 0.12;
-    ry += (my - ry) * 0.12;
-    ring.style.left = rx + 'px';
-    ring.style.top  = ry + 'px';
-    requestAnimationFrame(animRing);
-  }
-  animRing();
-
-  document.querySelectorAll('a, button, .card-arrow').forEach(el => {
-    el.addEventListener('mouseenter', () => {
-      cur.style.width  = '6px';
-      cur.style.height = '6px';
-      ring.style.width  = '56px';
-      ring.style.height = '56px';
-      ring.style.borderColor = 'rgba(255,95,21,0.8)';
-    });
-    el.addEventListener('mouseleave', () => {
-      cur.style.width  = '10px';
-      cur.style.height = '10px';
-      ring.style.width  = '36px';
-      ring.style.height = '36px';
-      ring.style.borderColor = 'rgba(255,95,21,0.5)';
-    });
-  });
-}
+/* ----- REDUCED MOTION PREF ----- */
+const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 /* ----- HAMBURGER MOBILE NAV ----- */
 (function () {
@@ -209,16 +172,24 @@ const techs = [
 ];
 
 const track = document.getElementById('marquee');
-const items = [...techs, ...techs].map(t => {
-  const d = document.createElement('div');
-  d.className = 'tech-item';
-  const iconHTML = t.icon
-    ? `<i class="${t.icon} tech-icon"></i>`
-    : `<div class="tech-dot"></div>`;
-  d.innerHTML = `${iconHTML}<span class="tech-name">${t.name}</span>`;
-  return d;
-});
-items.forEach(i => track.appendChild(i));
+if (track) {
+  const frag = document.createDocumentFragment();
+  [...techs, ...techs].forEach(t => {
+    const item = document.createElement('div');
+    item.className = 'tech-item';
+    const iconHTML = t.icon
+      ? `<i class="${t.icon} tech-icon"></i>`
+      : `<div class="tech-dot"></div>`;
+    item.innerHTML = `${iconHTML}<span class="tech-name">${t.name}</span>`;
+    frag.appendChild(item);
+
+    const sep = document.createElement('span');
+    sep.className = 'tech-sep';
+    sep.textContent = '—';
+    frag.appendChild(sep);
+  });
+  track.appendChild(frag);
+}
 
 /* ----- SCROLL REVEAL ----- */
 const reveals = document.querySelectorAll('.reveal');
@@ -228,28 +199,6 @@ const obs = new IntersectionObserver(entries => {
   });
 }, { threshold: 0.1, rootMargin: '0px 0px -60px 0px' });
 reveals.forEach(r => obs.observe(r));
-
-/* ----- NAV CONTACT BUTTON ----- */
-const navCta = document.querySelector('.nav-cta');
-navCta && navCta.addEventListener('click', () => {
-  const contact = document.getElementById('contact');
-  contact && contact.scrollIntoView({ behavior: 'smooth' });
-});
-
-/* ----- ACTIVE NAV HIGHLIGHT ----- */
-const sections  = document.querySelectorAll('section[id]');
-const sideLinks = document.querySelectorAll('.side-nav a');
-
-window.addEventListener('scroll', () => {
-  let current = '';
-  sections.forEach(s => {
-    if (window.scrollY >= s.offsetTop - 200) current = s.id;
-  });
-  sideLinks.forEach(a => {
-    a.classList.remove('active');
-    if (a.getAttribute('href') === '#' + current) a.classList.add('active');
-  });
-}, { passive: true });
 
 /* ----- SOCIAL LINKS — prevent page jump from # ----- */
 document.querySelectorAll('.social-link').forEach(link => {
@@ -264,16 +213,18 @@ document.querySelectorAll('.social-link').forEach(link => {
 const ch             = document.querySelector('.contact-heading');
 const contactSection = document.getElementById('contact');
 
-contactSection && contactSection.addEventListener('mousemove', e => {
-  const rect = contactSection.getBoundingClientRect();
-  const x = (e.clientX - rect.left) / rect.width  - 0.5;
-  const y = (e.clientY - rect.top)  / rect.height - 0.5;
-  ch.style.transform = `translate(${x * 12}px, ${y * 8}px)`;
-});
+if (!reduceMotion && ch && contactSection) {
+  contactSection.addEventListener('mousemove', e => {
+    const rect = contactSection.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / rect.width  - 0.5;
+    const y = (e.clientY - rect.top)  / rect.height - 0.5;
+    ch.style.transform = `translate(${x * 6}px, ${y * 4}px)`;
+  });
 
-contactSection && contactSection.addEventListener('mouseleave', () => {
-  ch.style.transform = 'translate(0, 0)';
-});
+  contactSection.addEventListener('mouseleave', () => {
+    ch.style.transform = 'translate(0, 0)';
+  });
+}
 
 /* ----- HERO NEURAL NETWORK CANVAS ----- */
 (function () {
@@ -281,16 +232,30 @@ contactSection && contactSection.addEventListener('mouseleave', () => {
   if (!canvas) return;
   const ctx = canvas.getContext('2d');
 
-  const ORANGE      = '#FF5F15';
+  /* ink is read from CSS so the diagram inverts with the theme */
+  let INK_RGB        = '10,10,11';
   const LAYERS      = [3, 5, 5, 2];
   const LAYER_LABELS = ['INPUT', 'HIDDEN', 'HIDDEN', 'OUTPUT'];
   let nodes = [], conns = [], W, H;
 
+  function readInk() {
+    const v = getComputedStyle(document.documentElement)
+      .getPropertyValue('--hero-ink-rgb').trim();
+    if (v) INK_RGB = v;
+  }
+
+  function ink(a) {
+    return a === undefined ? 'rgb(' + INK_RGB + ')' : 'rgba(' + INK_RGB + ',' + a + ')';
+  }
+
   function resize() {
+    readInk();
+    const dpr = window.devicePixelRatio || 1;
     W = canvas.offsetWidth;
     H = canvas.offsetHeight;
-    canvas.width  = W;
-    canvas.height = H;
+    canvas.width  = Math.round(W * dpr);
+    canvas.height = Math.round(H * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     buildNetwork();
     buildConns();
   }
@@ -319,13 +284,19 @@ contactSection && contactSection.addEventListener('mouseleave', () => {
           progress: -Math.random(),
           speed:    0.004 + Math.random() * 0.004,
           active:   Math.random() > 0.45,
-          alpha:    0.05 + Math.random() * 0.07
+          alpha:    0.45
         });
       }));
     }
   }
 
+  let heroVisible = true;
+
   function draw() {
+    /* keep the loop alive but skip the work while the hero is off-screen */
+    if (!reduceMotion) requestAnimationFrame(draw);
+    if (!heroVisible) return;
+
     ctx.clearRect(0, 0, W, H);
 
     /* connections */
@@ -333,11 +304,11 @@ contactSection && contactSection.addEventListener('mouseleave', () => {
       ctx.beginPath();
       ctx.moveTo(c.from.x, c.from.y);
       ctx.lineTo(c.to.x,   c.to.y);
-      ctx.strokeStyle = `rgba(255,95,21,${c.alpha})`;
-      ctx.lineWidth = 0.8;
+      ctx.strokeStyle = ink(c.alpha);
+      ctx.lineWidth = 1;
       ctx.stroke();
 
-      if (c.active) {
+      if (!reduceMotion && c.active) {
         c.progress += c.speed;
         if (c.progress > 1) {
           c.to.pulse = 1;
@@ -347,68 +318,190 @@ contactSection && contactSection.addEventListener('mouseleave', () => {
         if (c.progress >= 0) {
           const px = c.from.x + (c.to.x - c.from.x) * c.progress;
           const py = c.from.y + (c.to.y - c.from.y) * c.progress;
-          const g  = ctx.createRadialGradient(px, py, 0, px, py, 12);
-          g.addColorStop(0, 'rgba(255,95,21,0.7)');
-          g.addColorStop(1, 'rgba(255,95,21,0)');
-          ctx.beginPath(); ctx.arc(px, py, 12, 0, Math.PI * 2);
-          ctx.fillStyle = g; ctx.fill();
           ctx.beginPath(); ctx.arc(px, py, 2.5, 0, Math.PI * 2);
-          ctx.fillStyle = ORANGE; ctx.fill();
+          ctx.fillStyle = ink(0.9); ctx.fill();
         }
-      } else if (Math.random() > 0.997) { c.active = true; }
+      } else if (!reduceMotion && Math.random() > 0.997) { c.active = true; }
     });
 
     /* nodes */
     nodes.forEach(n => {
-      n.glow += 0.022;
-      const g   = (Math.sin(n.glow) + 1) / 2;
+      if (!reduceMotion) n.glow += 0.022;
+      const g    = (Math.sin(n.glow) + 1) / 2;
       const edge = n.layer === 0 || n.layer === LAYERS.length - 1;
-      const r    = edge ? 6 : 5;
+      const r    = edge ? 6 : 5.5;
 
       /* pulse ring */
       if (n.pulse > 0) {
         const pr = (1 - n.pulse) * 28;
         ctx.beginPath(); ctx.arc(n.x, n.y, pr, 0, Math.PI * 2);
-        ctx.strokeStyle = `rgba(255,95,21,${n.pulse * 0.55})`;
-        ctx.lineWidth = 1.2; ctx.stroke();
+        ctx.strokeStyle = ink(n.pulse * 0.35);
+        ctx.lineWidth = 1; ctx.stroke();
         n.pulse -= 0.035;
         if (n.pulse < 0) n.pulse = 0;
       }
 
-      /* ambient glow */
-      const ag = ctx.createRadialGradient(n.x, n.y, 0, n.x, n.y, 24);
-      ag.addColorStop(0, `rgba(255,95,21,${(edge ? 0.28 : 0.12) * g})`);
-      ag.addColorStop(1, 'rgba(255,95,21,0)');
-      ctx.beginPath(); ctx.arc(n.x, n.y, 24, 0, Math.PI * 2);
-      ctx.fillStyle = ag; ctx.fill();
-
-      /* fill */
-      ctx.beginPath(); ctx.arc(n.x, n.y, r, 0, Math.PI * 2);
-      ctx.fillStyle = edge ? ORANGE : `rgba(255,255,255,${0.25 + g * 0.55})`;
-      ctx.fill();
+      /* fill — edge layers solid ink, hidden layers open circles */
+      if (edge) {
+        ctx.beginPath(); ctx.arc(n.x, n.y, r, 0, Math.PI * 2);
+        ctx.fillStyle = ink(); ctx.fill();
+      }
 
       /* border */
       ctx.beginPath(); ctx.arc(n.x, n.y, r, 0, Math.PI * 2);
-      ctx.strokeStyle = `rgba(255,95,21,${0.4 + g * 0.6})`;
-      ctx.lineWidth = 1; ctx.stroke();
+      ctx.strokeStyle = ink(reduceMotion ? 1 : 0.85 + g * 0.15);
+      ctx.lineWidth = 1.2; ctx.stroke();
     });
 
     /* layer labels */
-    ctx.font = '700 10px "Barlow Condensed", sans-serif';
+    ctx.font = '500 10px "JetBrains Mono", monospace';
     ctx.textAlign = 'center';
     const padX = W * 0.12, uw = W - padX * 2;
-    LAYER_LABELS.forEach((lbl, li) => {
-      const x = padX + (li / (LAYERS.length - 1)) * uw;
-      ctx.fillStyle = (li === 0 || li === LAYERS.length - 1)
-        ? 'rgba(255,95,21,0.65)'
-        : 'rgba(255,255,255,0.2)';
-      ctx.fillText(lbl, x, H - 18);
-    });
-
-    requestAnimationFrame(draw);
+    /* the layer labels only fit on a wide canvas */
+    if (W >= 640) {
+      LAYER_LABELS.forEach((lbl, li) => {
+        const x = padX + (li / (LAYERS.length - 1)) * uw;
+        ctx.fillStyle = ink((li === 0 || li === LAYERS.length - 1) ? 0.65 : 0.45);
+        ctx.fillText(lbl, x, H - 18);
+      });
+    }
   }
 
   resize();
   window.addEventListener('resize', resize);
   draw();
+
+  /* stop redrawing once the hero scrolls out of view */
+  if ('IntersectionObserver' in window) {
+    new IntersectionObserver(function (entries) {
+      heroVisible = entries[entries.length - 1].isIntersecting;
+    }, { threshold: 0 }).observe(canvas);
+  }
+
+  /* re-read ink when the theme toggles (the rAF loop picks it up otherwise) */
+  document.addEventListener('themechange', function () {
+    readInk();
+    if (reduceMotion) draw();
+  });
+})();
+
+/* ----- NAV SCROLLSPY SLIDER ----- */
+(function () {
+  const navLinks = document.querySelector('.nav-links');
+  if (!navLinks) return;
+
+  const indicator = navLinks.querySelector('.nav-indicator');
+  const links = Array.from(navLinks.querySelectorAll('a[data-section]'));
+  if (!indicator || !links.length) return;
+
+  const navH = parseInt(
+    getComputedStyle(document.documentElement).getPropertyValue('--nav-h'), 10
+  ) || 64;
+
+  const targets = links.map(link => ({
+    link,
+    section: document.getElementById(link.getAttribute('data-section'))
+  }));
+
+  let current = null;
+  let queued  = false;
+
+  function place(link) {
+    const pad = 14;
+    indicator.style.width     = (link.offsetWidth + pad * 2) + 'px';
+    indicator.style.transform = 'translate(' + (link.offsetLeft - pad) + 'px, -50%)';
+    indicator.style.opacity   = '1';
+  }
+
+  function setActive(link) {
+    if (link === current) return;
+    current = link;
+    links.forEach(l => l.classList.toggle('active', l === link));
+    place(link);
+  }
+
+  function update() {
+    queued = false;
+    const probe = window.scrollY + navH + 12;
+    const atEnd = window.innerHeight + window.scrollY >=
+                  document.documentElement.scrollHeight - 2;
+
+    let active = targets[0].link;
+    if (atEnd) {
+      active = targets[targets.length - 1].link;
+    } else {
+      targets.forEach(t => {
+        if (t.section && t.section.offsetTop <= probe) active = t.link;
+      });
+    }
+    setActive(active);
+  }
+
+  function onScroll() {
+    if (queued) return;
+    queued = true;
+    requestAnimationFrame(update);
+  }
+
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', () => { current = null; update(); });
+  window.addEventListener('load', () => setTimeout(() => { current = null; update(); }, 80));
+
+  links.forEach(link => link.addEventListener('click', () => setActive(link)));
+
+  update();
+})();
+
+/* ----- THEME TOGGLE ----- */
+(function () {
+  const root = document.documentElement;
+  const btn  = document.querySelector('.theme-toggle');
+  if (!btn) return;
+
+  const mq = window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)') : null;
+
+  function stored() {
+    try { return localStorage.getItem('theme'); } catch (e) { return null; }
+  }
+  function store(t) {
+    try { localStorage.setItem('theme', t); } catch (e) { }
+  }
+
+  function apply(theme, animate) {
+    if (animate) {
+      root.classList.add('theme-anim');
+      window.setTimeout(function () { root.classList.remove('theme-anim'); }, 340);
+    }
+
+    root.setAttribute('data-theme', theme);
+
+    const dark  = theme === 'dark';
+    const label = dark ? 'Switch to light theme' : 'Switch to dark theme';
+    btn.setAttribute('aria-pressed', String(dark));
+    btn.setAttribute('aria-label', label);
+    btn.setAttribute('title', label);
+
+    const meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) meta.setAttribute('content', dark ? '#0A0A0B' : '#FFFFFF');
+
+    document.dispatchEvent(new CustomEvent('themechange'));
+  }
+
+  btn.addEventListener('click', function () {
+    const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    store(next);
+    apply(next, true);
+  });
+
+  /* follow the OS only while the visitor has not chosen a theme themselves */
+  function onSchemeChange(e) {
+    if (!stored()) apply(e.matches ? 'dark' : 'light', true);
+  }
+  if (mq) {
+    if (mq.addEventListener) mq.addEventListener('change', onSchemeChange);
+    else if (mq.addListener) mq.addListener(onSchemeChange);
+  }
+
+  /* sync the button with whatever the head script already applied */
+  apply(root.getAttribute('data-theme') === 'dark' ? 'dark' : 'light', false);
 })();

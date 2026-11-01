@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>soumya.dev — Where Creativity Meets Results</title>
   <meta name="description"
     content="soumya.dev — Full-stack developer building scalable, pixel-perfect digital products at the intersection of clean engineering and thoughtful design.">
@@ -12,13 +12,27 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
-    href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@300;400;500;600&family=Barlow+Condensed:wght@700;800;900&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Archivo:wght@300;400;500;600;800&family=JetBrains+Mono:wght@500&display=swap"
     rel="stylesheet">
 
   <!-- Stylesheet -->
   <link rel="stylesheet" href="css/style.css">
   <!-- Devicons (tech stack icons) -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/devicon.min.css">
+
+  <!-- Theme — applied before first paint so there is no flash -->
+  <meta name="theme-color" content="#FFFFFF">
+  <script>
+    (function () {
+      var t = null;
+      try { t = localStorage.getItem('theme'); } catch (e) { }
+      if (t !== 'dark' && t !== 'light') {
+        t = (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches)
+          ? 'dark' : 'light';
+      }
+      document.documentElement.setAttribute('data-theme', t);
+    })();
+  </script>
 </head>
 
 <body>
@@ -37,10 +51,6 @@
     </div>
   </div>
 
-  <!-- Custom Cursor -->
-  <div class="cursor" id="cur"></div>
-  <div class="cursor-ring" id="curRing"></div>
-
   <!-- ===================== NAV ===================== -->
   <nav>
     <a href="#" class="nav-logo">
@@ -50,33 +60,41 @@
       soumya.dev
     </a>
     <ul class="nav-links">
-      <li><a href="#hero">Home</a></li>
-      <li><a href="#about">About</a></li>
-      <li><a href="#work">Projects</a></li>
-      <li><a href="#services">Services</a></li>
+      <li><a href="#hero" data-section="hero">Home</a></li>
+      <li><a href="#services" data-section="services">Services</a></li>
+      <li><a href="#work" data-section="work">Projects</a></li>
+      <li><a href="#about" data-section="about">About</a></li>
+      <li><a href="#contact" data-section="contact">Contact</a></li>
+      <li class="nav-indicator" aria-hidden="true"></li>
     </ul>
-    <button class="nav-cta">Contact</button>
+    <button class="theme-toggle" type="button" aria-pressed="false" aria-label="Switch to dark theme"
+      title="Switch to dark theme">
+      <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+        stroke-linecap="round">
+        <circle cx="12" cy="12" r="4.2" />
+        <line x1="12" y1="2.4" x2="12" y2="5" />
+        <line x1="12" y1="19" x2="12" y2="21.6" />
+        <line x1="2.4" y1="12" x2="5" y2="12" />
+        <line x1="19" y1="12" x2="21.6" y2="12" />
+        <line x1="5.2" y1="5.2" x2="7" y2="7" />
+        <line x1="17" y1="17" x2="18.8" y2="18.8" />
+        <line x1="5.2" y1="18.8" x2="7" y2="17" />
+        <line x1="17" y1="7" x2="18.8" y2="5.2" />
+      </svg>
+      <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+        stroke-linecap="round" stroke-linejoin="round">
+        <path d="M20.5 14.2A8.6 8.6 0 0 1 9.8 3.5a8.6 8.6 0 1 0 10.7 10.7Z" />
+      </svg>
+    </button>
   </nav>
 
   <!-- ===================== HERO ===================== -->
   <section id="hero">
-    <div class="gridlines">
-      <div class="gl-v" style="left:8.5%"></div>
-      <div class="gl-v" style="left:25%"></div>
-      <div class="gl-v" style="left:75%"></div>
-      <div class="gl-h" style="top:15%"></div>
-      <div class="gl-h" style="top:85%"></div>
-      <div class="gl-cross" style="left:calc(25% - 12px);top:calc(15% - 12px)"></div>
-      <div class="gl-cross" style="left:calc(8.5% - 12px);top:calc(40% - 12px)"></div>
-    </div>
-    <div class="hero-bg"></div>
     <!-- AI Neural Network Visual -->
     <div class="hero-visual">
       <canvas id="neuralCanvas"></canvas>
       <div class="hv-left-fade"></div>
     </div>
-
-
 
     <!-- Hero Text -->
     <div class="hero-content">
@@ -85,17 +103,14 @@
       <h1 class="hero-heading line3">
         VISION
         <span class="star-inline">
-          <svg class="star-svg" viewBox="0 0 80 80" fill="currentColor">
-            <path
-              d="M40 0 L44 30 L74 20 L54 44 L80 54 L50 54 L60 80 L40 62 L20 80 L30 54 L0 54 L26 44 L6 20 L36 30 Z" />
+          <svg class="crosshair-svg" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.4">
+            <line x1="2" y1="10" x2="18" y2="10" />
+            <line x1="10" y1="2" x2="10" y2="18" />
           </svg>
         </span>
       </h1>
       <h1 class="hero-heading line4">& CODE</h1>
-
     </div>
-
-
 
     <!-- ML Engineer USP Card -->
     <div class="card card-fullstack">
@@ -108,32 +123,26 @@
     <div class="card card-building accent-tl">
       <div class="card-num">[01]</div>
       <div class="card-title">Building Digital Solutions</div>
-      <div class="card-body">SOUMYA
-    Turning complex data and code into intelligent web products.
+      <div class="card-body">Turning complex data and code into intelligent web products.
     An engineer specializing in training ML systems and developing full-stack web applications from the ground up.</div>
       <div class="mock-ui"
-        style="position:relative;inset:auto;margin-top:1rem;border:1px solid var(--border);height:80px;overflow:hidden">
+        style="position:relative;inset:auto;margin-top:1rem;border:1px solid var(--rule);height:80px;overflow:hidden">
         <div class="mock-bar">
-          <div class="mock-dot" style="background:#ff5f57"></div>
-          <div class="mock-dot" style="background:#febc2e"></div>
-          <div class="mock-dot" style="background:#28c840"></div>
+          <span class="mock-path">~/ambient-habit</span>
         </div>
-        <div style="padding:8px;display:flex;gap:6px;flex-direction:column">
+        <div class="mock-body" style="padding:8px;display:flex;gap:6px;flex-direction:column">
           <div class="mock-row" style="width:80%"></div>
           <div class="mock-row" style="width:60%"></div>
         </div>
       </div>
       <a href="#work"
-        style="display:inline-block;margin-top:1rem;font-size:0.68rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--orange);text-decoration:none;font-weight:600">See
+        style="display:inline-block;margin-top:1rem;font-size:0.68rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink);text-decoration:none;font-weight:600">See
         Projects →</a>
     </div>
   </section>
 
   <!-- ===================== SERVICES ===================== -->
   <section id="services">
-    <div class="gridlines">
-      <div class="gl-v" style="left:50%"></div>
-    </div>
     <div class="reveal">
       <div class="section-label">What I Do</div>
       <div class="section-title">EXPERTISE &amp;<br>SERVICES</div>
@@ -142,7 +151,7 @@
 
       <!-- ML & AI Engineering -->
       <div class="service-card">
-        <div class="service-icon">⬡</div>
+        <div class="service-icon">01</div>
         <div class="service-name">ML &amp; AI Engineering</div>
         <div class="service-desc">Building intelligent systems end-to-end — from data pipelines and classical ML to deep
           learning architectures and production-ready GenAI applications powered by large language models.</div>
@@ -163,7 +172,7 @@
 
       <!-- Web Stack -->
       <div class="service-card">
-        <div class="service-icon">⬡</div>
+        <div class="service-icon">02</div>
         <div class="service-name">Web Stack</div>
         <div class="service-desc">Crafting full-stack web experiences from pixel-perfect frontends to robust backend
           APIs and scalable cloud databases — all deployed and production-ready.</div>
@@ -183,7 +192,7 @@
 
       <!-- Scalable Code -->
       <div class="service-card">
-        <div class="service-icon">⬡</div>
+        <div class="service-icon">03</div>
         <div class="service-name">Scalable Code</div>
         <div class="service-desc">Writing clean, maintainable, and efficient code using modern development practices — built to scale from prototype to production without breaking a sweat.</div>
         <div class="service-tags">
@@ -246,7 +255,7 @@
             <span class="work-tag">React</span><span class="work-tag">Node.js</span><span
               class="work-tag">MongoDB</span><span class="work-tag">Redis</span>
           </div>
-          <a href="https://flowline-crm-hb53.vercel.app" target="_blank" rel="noopener" class="work-link">View Project</a>
+          <a href="https://saas-flow-sigma.vercel.app/" target="_blank" rel="noopener" class="work-link">View Project</a>
         </div>
         <div class="work-mockup mock-2" style="direction:ltr">
           <img src="img/project-2.png" alt="CRM Platform" class="work-screenshot">
@@ -295,7 +304,7 @@
           <div class="stat-label">Hackathons</div>
         </div>
         <div>
-          <div class="stat-num">6+</div>
+          <div class="stat-num">6<span>+</span></div>
           <div class="stat-label">Projects Shipped</div>
         </div>
       </div>
@@ -324,12 +333,14 @@
   <!-- ===================== FOOTER ===================== -->
   <div class="footer-bar">
     <span class="footer-copy">© 2026 soumya.dev. All rights reserved.</span>
-    <span class="footer-copy" style="color:rgba(255,255,255,0.2)">WHERE CREATIVITY MEETS RESULTS</span>
+    <span class="footer-copy footer-copy-muted">WHERE CREATIVITY MEETS RESULTS</span>
   </div>
 
   <!-- JavaScript -->
   <script src="js/main.js"></script>
+  <!-- Knowledge base must load before the assistant that reads it -->
+  <script src="data/knowledge.js"></script>
+  <script src="js/assistant.js"></script>
 </body>
 
 </html>
-
