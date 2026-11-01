@@ -270,6 +270,8 @@
      --------------------------------------------------------------- */
 
   const EMAIL = 'soumyadeeppal4211@gmail.com';
+  /* reuse the contact entry so every URL lives in the knowledge base only */
+  const CONTACT_LINKS = (byId.get('contact') || {}).links || [];
   const REFUSAL =
     `I only answer questions about Soumya's work — that one is outside what I know. ` +
     `Try one of these, or email ${EMAIL}.`;
@@ -337,9 +339,31 @@
 
   /* ---- rendering ---- */
 
-  function addMessage(who, text) {
+  /* Links are authored in the knowledge base, but only real link schemes are
+     allowed through so a stray href can never become a javascript: URL. */
+  const SAFE_HREF = /^(https?:|mailto:)/i;
+
+  function addMessage(who, text, links) {
     const row = el('div', `assist-msg assist-msg-${who}`);
-    row.appendChild(el('div', 'assist-bubble', text));
+    const bubble = el('div', 'assist-bubble');
+    bubble.appendChild(el('div', null, text));
+
+    const safe = (links || []).filter((l) => l && SAFE_HREF.test(String(l.href)));
+    if (safe.length) {
+      const wrap = el('div', 'assist-links');
+      safe.forEach((l) => {
+        const a = el('a', 'assist-link', l.label);
+        a.href = l.href;
+        if (!/^mailto:/i.test(l.href)) {
+          a.target = '_blank';
+          a.rel = 'noopener noreferrer';
+        }
+        wrap.appendChild(a);
+      });
+      bubble.appendChild(wrap);
+    }
+
+    row.appendChild(bubble);
     log.appendChild(row);
     log.scrollTop = log.scrollHeight;
     return row;
@@ -357,6 +381,10 @@
         chip.addEventListener('click', () => ask(chipLabel(entry)));
         chips.appendChild(chip);
       });
+
+    /* the chip row shrinks the log, so the scroll set when the message was
+       appended is stale — re-pin to the bottom once layout has settled */
+    requestAnimationFrame(() => { log.scrollTop = log.scrollHeight; });
   }
 
   /* ---- conversation ---- */
@@ -369,7 +397,7 @@
     if (!text || busy) return;
 
     if (sent >= CONFIG.maxMessages) {
-      addMessage('bot', CAP_REPLY);
+      addMessage('bot', CAP_REPLY, CONTACT_LINKS.slice(0, 1));
       input.disabled = true;
       send.disabled = true;
       renderChips(['contact']);
@@ -392,7 +420,7 @@
     busy = false;
 
     if (result.kind === 'answer') {
-      addMessage('bot', result.entry.answer);
+      addMessage('bot', result.entry.answer, result.entry.links);
       renderChips(result.entry.related);
       return;
     }
@@ -403,7 +431,7 @@
       return;
     }
 
-    addMessage('bot', REFUSAL);
+    addMessage('bot', REFUSAL, CONTACT_LINKS);
     renderChips(KB.starters);
   }
 

@@ -766,6 +766,18 @@ html[data-theme="dark"] .theme-toggle .icon-moon{opacity:1;transform:none}
 .assist-msg-bot .assist-bubble{background:transparent;color:var(--graphite)}
 .assist-msg-user .assist-bubble{background:var(--ink);color:var(--paper);border-color:var(--ink)}
 
+.assist-links{display:flex;flex-wrap:wrap;gap:0.35rem;margin-top:0.7rem}
+.assist-link{
+  font-family:var(--font-mono);font-size:0.6rem;letter-spacing:0.06em;
+  text-transform:uppercase;text-decoration:none;
+  padding:0.3rem 0.6rem;
+  border:1px solid var(--rule);color:var(--graphite);
+  transition:border-color 0.2s,color 0.2s;
+}
+.assist-link:hover{border-color:var(--ink);color:var(--ink)}
+/* external-link arrow, but not for mailto */
+.assist-link[href^="http"]::after{content:' ↗'}
+
 .assist-chips{display:flex;flex-wrap:wrap;gap:0.4rem;padding:0 1.2rem 0.9rem}
 .assist-chip{
   font-family:var(--font-mono);font-size:0.62rem;letter-spacing:0.06em;
@@ -774,7 +786,8 @@ html[data-theme="dark"] .theme-toggle .icon-moon{opacity:1;transform:none}
   cursor:pointer;transition:border-color 0.2s,color 0.2s;
 }
 .assist-chip:hover{border-color:var(--ink);color:var(--ink)}
-.assist-chip:focus-visible,.assist-close:focus-visible,.assist-send:focus-visible{
+.assist-chip:focus-visible,.assist-close:focus-visible,
+.assist-send:focus-visible,.assist-link:focus-visible{
   outline:2px solid var(--ink);outline-offset:2px;
 }
 

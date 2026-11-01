@@ -20,7 +20,7 @@
    cached embedding vectors.
    ============================================================ */
 window.SOUMYA_KB = {
-  version: 2,
+  version: 3,
 
   /* Tappable chips shown when the panel first opens. */
   starters: ['role', 'techstack', 'projects-overview', 'skills-ml', 'contact'],
@@ -160,6 +160,12 @@ window.SOUMYA_KB = {
       tags: ['projects'],
       answer:
         'Three featured case studies: Ambient Habit (a Next.js + OpenAI habit tracker), Flowline CRM (a React + Node CRM and analytics platform for traders) and ClusterCart (a React + Web3 e-commerce dashboard with intelligent product clustering).',
+      links: [
+        { label: 'Ambient Habit', href: 'https://ambient-habit.vercel.app/' },
+        { label: 'Flowline CRM', href: 'https://saas-flow-sigma.vercel.app/' },
+        { label: 'ClusterCart', href: 'https://clustercart-mfw7.vercel.app/' },
+        { label: 'GitHub', href: 'https://github.com/Okpiyiii' },
+      ],
       related: ['project-ambient-habit', 'project-flowline-crm', 'project-clustercart'],
     },
     {
@@ -168,7 +174,8 @@ window.SOUMYA_KB = {
       keywords: ['ambient', 'habit', 'tracker', 'habits', 'next.js', 'nextjs', 'openai', 'vercel', 'sdk', 'postgresql'],
       tags: ['projects'],
       answer:
-        'Ambient Habit (001 / Full-Stack) — an aesthetically focused, minimalist web application designed to help users track daily habits and build consistency through a clean, distraction-free interface. Built with Next.js, OpenAI, the Vercel AI SDK and PostgreSQL, and it is live at ambient-habit.vercel.app.',
+        'Ambient Habit (001 / Full-Stack) — an aesthetically focused, minimalist web application designed to help users track daily habits and build consistency through a clean, distraction-free interface. Built with Next.js, OpenAI, the Vercel AI SDK and PostgreSQL.',
+      links: [{ label: 'Open Ambient Habit', href: 'https://ambient-habit.vercel.app/' }],
       related: ['project-flowline-crm', 'project-clustercart', 'contact'],
     },
     {
@@ -177,7 +184,8 @@ window.SOUMYA_KB = {
       keywords: ['flowline', 'crm', 'saas', 'traders', 'trading', 'analytics', 'csv', 'redis', 'mongodb', 'node.js'],
       tags: ['projects'],
       answer:
-        'Flowline CRM (002 / SaaS) — a sleek, minimalist CRM and analytics platform designed specifically for traders, featuring interactive data visualizations and seamless CSV import capabilities. Built with React, Node.js, MongoDB and Redis, and it is live at saas-flow-sigma.vercel.app.',
+        'Flowline CRM (002 / SaaS) — a sleek, minimalist CRM and analytics platform designed specifically for traders, featuring interactive data visualizations and seamless CSV import capabilities. Built with React, Node.js, MongoDB and Redis.',
+      links: [{ label: 'Open Flowline CRM', href: 'https://saas-flow-sigma.vercel.app/' }],
       related: ['project-ambient-habit', 'project-clustercart', 'contact'],
     },
     {
@@ -186,7 +194,8 @@ window.SOUMYA_KB = {
       keywords: ['clustercart', 'dashboard', 'web3', 'ecommerce', 'e-commerce', 'cart', 'clustering', 'd3', 'graphql'],
       tags: ['projects'],
       answer:
-        'ClusterCart (003 / Web3) — a modern, high-performance e-commerce web application featuring intelligent product clustering, dynamic cart management and an ultra-clean, minimalist interface. Built with React, Web3.js, D3.js and GraphQL, and it is live at clustercart-mfw7.vercel.app.',
+        'ClusterCart (003 / Web3) — a modern, high-performance e-commerce web application featuring intelligent product clustering, dynamic cart management and an ultra-clean, minimalist interface. Built with React, Web3.js, D3.js and GraphQL.',
+      links: [{ label: 'Open ClusterCart', href: 'https://clustercart-mfw7.vercel.app/' }],
       related: ['project-ambient-habit', 'project-flowline-crm', 'contact'],
     },
     {
@@ -196,6 +205,7 @@ window.SOUMYA_KB = {
       tags: ['projects'],
       answer:
         'This site is hand-written HTML, CSS and vanilla JavaScript — no framework. The hero runs a canvas neural-network animation, the tech marquee is generated in JS, and it has light and dark themes plus a scrollspy nav.',
+      links: [{ label: 'GitHub', href: 'https://github.com/Okpiyiii' }],
       related: ['role', 'techstack', 'contact'],
     },
 
@@ -215,7 +225,37 @@ window.SOUMYA_KB = {
       tags: ['contact'],
       answer:
         "Easiest is email — soumyadeeppal4211@gmail.com. I'm also on GitHub (@Okpiyiii) and LinkedIn (Soumyadeep Pal).",
-      related: ['availability', 'resume', 'projects-overview'],
+      links: [
+        { label: 'Email', href: 'mailto:soumyadeeppal4211@gmail.com' },
+        { label: 'GitHub', href: 'https://github.com/Okpiyiii' },
+        { label: 'LinkedIn', href: 'https://www.linkedin.com/in/soumyadeep-pal-1a9929380' },
+      ],
+      related: ['links', 'availability', 'resume'],
+    },
+    {
+      id: 'links',
+      q: [
+        'your links',
+        'share your links',
+        'send me your links',
+        'where can i find you',
+        'your profiles',
+        'all your links',
+        'your socials',
+      ],
+      keywords: ['links', 'link', 'profiles', 'profile', 'socials', 'social', 'find', 'connect'],
+      tags: ['contact'],
+      answer:
+        'Here they are — the three live projects plus GitHub, LinkedIn and email:',
+      links: [
+        { label: 'Ambient Habit', href: 'https://ambient-habit.vercel.app/' },
+        { label: 'Flowline CRM', href: 'https://saas-flow-sigma.vercel.app/' },
+        { label: 'ClusterCart', href: 'https://clustercart-mfw7.vercel.app/' },
+        { label: 'GitHub', href: 'https://github.com/Okpiyiii' },
+        { label: 'LinkedIn', href: 'https://www.linkedin.com/in/soumyadeep-pal-1a9929380' },
+        { label: 'Email', href: 'mailto:soumyadeeppal4211@gmail.com' },
+      ],
+      related: ['contact', 'projects-overview', 'resume'],
     },
 
     /* ---------- credentials (from the résumé) ---------- */
@@ -241,6 +281,7 @@ window.SOUMYA_KB = {
       tags: ['contact'],
       answer:
         "Yes — I'm available right now and open to opportunities. Email me at soumyadeeppal4211@gmail.com and I'll get back to you.",
+      links: [{ label: 'Email me', href: 'mailto:soumyadeeppal4211@gmail.com' }],
       related: ['contact', 'resume', 'location'],
     },
     {
@@ -291,6 +332,7 @@ window.SOUMYA_KB = {
       tags: ['contact'],
       answer:
         "The résumé isn't hosted on the site yet — email me at soumyadeeppal4211@gmail.com and I'll send it over. Short version: final-year ECE student at the Academy of Technology, Kolkata, working across ML/AI and embedded ML, with projects spanning ML sales prediction, a trader CRM, a fraud-detection hackathon app and a TinyML predictive-maintenance final-year project.",
+      links: [{ label: 'Email me', href: 'mailto:soumyadeeppal4211@gmail.com' }],
       related: ['contact', 'education', 'projects-overview'],
     },
     {
