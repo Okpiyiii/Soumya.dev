@@ -214,8 +214,3 @@ plain file host — no server, no environment variables, no API keys.
 - Email: [soumyadeeppal4211@gmail.com](mailto:soumyadeeppal4211@gmail.com)
 
 ---
-
-## License
-
-MIT. Note: this repository does not currently include a `LICENSE` file — add one if you intend to
-rely on that grant.
