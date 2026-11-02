@@ -88,6 +88,9 @@ html{
   -webkit-text-size-adjust:100%;
   -ms-text-size-adjust:100%;
 }
+/* anchored sections must clear the fixed header, otherwise the nav covers
+   the top of the section you just jumped to */
+section[id]{scroll-margin-top:var(--nav-h)}
 body{
   background:var(--paper);
   color:var(--ink);
@@ -181,7 +184,10 @@ a,button,.btn-primary,.work-link,.social-link{
 
 /* ----- NAV ----- */
 nav{
-  position:fixed;top:0;left:0;right:0;z-index:100;
+  position:fixed;top:0;left:0;right:0;
+  /* must sit above .nav-overlay (104): nav creates a stacking context, so the
+     z-index of .nav-links/.hamburger inside it is trapped at this level */
+  z-index:106;
   display:flex;align-items:center;justify-content:space-between;
   padding:0 2.5rem;height:var(--nav-h);
   border-bottom:1px solid var(--rule);
